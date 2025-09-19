@@ -12,4 +12,17 @@ function getComputerChoice() {
   }
 }
 // console.log(getComputerChoice("rock"))
-    
+
+function getHumanChoice() {
+  const choice = prompt("Enter rock, paper, or scissors:").toLowerCase();
+
+  if (choice === "rock" || choice === "paper" || choice === "scissors") {
+    return choice;
+  } else {
+    console.log("Invalid choice! Please type rock, paper, or scissors.");
+    return getHumanChoice(); 
+  }
+}
+
+// Test it
+console.log(getHumanChoice());
