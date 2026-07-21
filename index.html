@@ -1,36 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rock Paper Scissors</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors — Premium</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="container">
+    <div class="glass-card">
+        <header>
+            <h1>Rock Paper Scissors</h1>
+            <div class="streak-badge" id="streak-counter">Streak: 0 🔥</div>
+        </header>
 
-<h1>Rock Paper Scissors</h1>
+        <!-- Scoreboard Display -->
+        <div class="scoreboard">
+            <div class="score-box">
+                <span class="score-label">Player</span>
+                <span class="score-number" id="player-score">0</span>
+            </div>
+            <div class="score-divider">:</div>
+            <div class="score-box">
+                <span class="score-label">Computer</span>
+                <span class="score-number" id="computer-score">0</span>
+            </div>
+        </div>
 
-<div class="buttons">
-    <button id="rock">✊ Rock</button>
-    <button id="paper">✋ Paper</button>
-    <button id="scissors">✌️ Scissors</button>
-</div>
+        <!-- Interactive Game Cards -->
+        <div class="game-cards">
+            <button class="card-btn" id="rock" data-choice="rock">
+                <span class="card-emoji">✊</span>
+                <span class="card-text">Rock</span>
+            </button>
+            <button class="card-btn" id="paper" data-choice="paper">
+                <span class="card-emoji">✋</span>
+                <span class="card-text">Paper</span>
+            </button>
+            <button class="card-btn" id="scissors" data-choice="scissors">
+                <span class="card-emoji">✌️</span>
+                <span class="card-text">Scissors</span>
+            </button>
+        </div>
 
+        <!-- Live Visual Matchup Arena -->
+        <div class="arena">
+            <div class="arena-slot" id="player-slot">?</div>
+            <div class="vs-text">VS</div>
+            <div class="arena-slot" id="computer-slot">?</div>
+        </div>
 
+        <!-- Status & Feedback Messages -->
+        <div class="feedback-zone">
+            <div id="results">Make your move to begin the match</div>
+            <div id="winner"></div>
+        </div>
 
-<div class="display">
-    <div id="results">Make your move</div>
-    <div id="score">Player: 0 | Computer: 0</div>
-    <div id="winner"></div>
-</div>
+        <button id="reset" class="reset-btn">Reset Match</button>
+    </div>
 
-<button id="reset">Reset Game</button>
-</div>
-
-<script src="app.js"></script>
-
+    <script src="app.js"></script>
 </body>
 </html>

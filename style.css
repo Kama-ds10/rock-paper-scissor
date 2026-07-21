@@ -1,103 +1,231 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family: Arial, Helvetica, sans-serif;
+:root {
+    --bg-gradient: linear-gradient(135deg, #0f172a, #1e1b4b);
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent-win: #10b981;
+    --accent-lose: #ef4444;
+    --accent-tie: #f59e0b;
+    --card-hover: rgba(255, 255, 255, 0.07);
 }
 
-
-body{
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.container{
-    background:white;
-    padding:40px;
-    border-radius:15px;
-    text-align:center;
-    width:350px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-gradient);
+    color: var(--text-primary);
+    overflow: hidden;
 }
 
-h1{
-    margin-bottom:25px;
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    padding: 40px;
+    border-radius: 24px;
+    text-align: center;
+    width: 440px;
+    margin-top: 50px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
-.buttons{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:25px;
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
 }
 
-
-
-button{
-    padding:10px 16px;
-    border:none;
-    border-radius:8px;
-    font-size:16px;
-    cursor:pointer;
-    background:#333;
-    color:white;
-    transition:0.3s;
-    margin: 5px;
+h1 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
 }
 
-button:hover{
-    background:#ff4757;
-    transform:scale(1.05);
+.streak-badge {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    transition: transform 0.3s ease;
 }
 
-.display{
-    margin-top:15px;
+/* Scoreboard Styling */
+.scoreboard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 16px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.02);
 }
 
-
-#results{
-    font-size:18px;
-    margin-bottom:10px;
+.score-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-
-#score{
-    font-weight:bold;
-    margin-bottom:10px;
+.score-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
 }
 
-#winner{
-    font-size:20px;
-    color:#ff4757;
-    font-weight:bold;
+.score-number {
+    font-size: 32px;
+    font-weight: 700;
 }
 
-
-/* transition */
-.win-animation{
-  animation: pop 0.6s ease;
+.score-divider {
+    font-size: 24px;
+    color: var(--text-muted);
+    padding: 0 20px;
 }
 
-@keyframes pop{
-  0%{transform:scale(1);}
-  50%{transform:scale(1.3);}
-  100%{transform:scale(1);}
+/* Choice Cards Layout */
+.game-cards {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
 }
 
-
-#reset{
-  margin-top:20px;
-  padding:10px 15px;
-  border:none;
-  border-radius:8px;
-  background:#ff4757;
-  color:white;
-  font-size:16px;
-  cursor:pointer;
+.card-btn {
+    flex: 1;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 16px 8px;
+    cursor: pointer;
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#reset:hover{
-  background:#e84118;
+.card-btn:hover:not(:disabled) {
+    background: var(--card-hover);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-4px);
+}
+
+.card-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.card-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.card-emoji {
+    font-size: 28px;
+}
+
+.card-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+/* Matchup Arena Display */
+.arena {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 25px;
+}
+
+.arena-slot {
+    width: 70px;
+    height: 70px;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px dashed var(--glass-border);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    transition: all 0.3s ease;
+}
+
+.vs-text {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+/* Status Notifications */
+.feedback-zone {
+    min-height: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+}
+
+#results {
+    font-size: 15px;
+    color: var(--text-muted);
+}
+
+#winner {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.text-win { color: var(--accent-win); }
+.text-lose { color: var(--accent-lose); }
+.text-tie { color: var(--accent-tie); }
+
+/* Control Button Customization */
+.reset-btn {
+    margin-bottom: 50px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: var(--text-primary);
+    color: #000;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.reset-btn:hover {
+    background: #e2e8f0;
+}
+
+/* Micro-animations */
+.pop-animation {
+    animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }

@@ -1,137 +1,139 @@
-let playerScore = localStorage.getItem("playerScore") || 0;
-let computerScore = localStorage.getItem("computerScore") || 0;
+// Parse scores safely as numbers directly from Local Storage
+let playerScore = parseInt(localStorage.getItem("playerScore")) || 0;
+let computerScore = parseInt(localStorage.getItem("computerScore")) || 0;
+let winStreak = parseInt(localStorage.getItem("winStreak")) || 0;
+
+const playerSelectionTarget = document.getElementById("player-score");
+const computerSelectionTarget = document.getElementById("computer-score");
+const streakTarget = document.getElementById("streak-counter");
+
+const playerSlot = document.getElementById("player-slot");
+const computerSlot = document.getElementById("computer-slot");
 
 const resultsDiv = document.getElementById("results");
-const scoreDiv = document.getElementById("score");
 const winnerDiv = document.getElementById("winner");
 
-// SOUND EFFECTS
+// Emoji lookup table for clean state mapping
+const emojis = { rock: "✊", paper: "✋", scissors: "✌️" };
+
+// Audio configuration with safety guard checking
 const clickSound = new Audio("sounds/click.wav");
 const winSound = new Audio("sounds/win.wav");
 const loseSound = new Audio("sounds/gameover.wav");
 
-// show saved score on page load
-scoreDiv.textContent = `Player: ${playerScore} | Computer: ${computerScore}`;
-
-
-// COMPUTER CHOICE
-function computerPlay() {
-  const choices = ["rock", "paper", "scissors"];
-  return choices[Math.floor(Math.random() * choices.length)];
+function safelyPlaySound(audioElement) {
+    audioElement.play().catch(() => { /* Swallows auto-play block exceptions gracefully */ });
 }
 
+// Initial state display render
+function initializeUI() {
+    playerSelectionTarget.textContent = playerScore;
+    computerSelectionTarget.textContent = computerScore;
+    streakTarget.textContent = `Streak: ${winStreak} 🔥`;
+}
+initializeUI();
 
-// PLAY ROUND
+function getComputerChoice() {
+    const choices = ["rock", "paper", "scissors"];
+    return choices[Math.floor(Math.random() * choices.length)];
+}
+
 function playRound(playerSelection) {
+    if (playerScore >= 5 || computerScore >= 5) return;
+    
+    safelyPlaySound(clickSound);
+    const computerSelection = getComputerChoice();
 
-  clickSound.play();
+    // Render interactive visual arena slots
+    playerSlot.textContent = emojis[playerSelection];
+    computerSlot.textContent = emojis[computerSelection];
+    
+    // Trigger CSS micro-animations cleanly
+    playerSlot.classList.remove("pop-animation");
+    computerSlot.classList.remove("pop-animation");
+    void playerSlot.offsetWidth; // Force DOM reflow to restart animation sequence
+    playerSlot.classList.add("pop-animation");
+    computerSlot.classList.add("pop-animation");
 
-  const computerSelection = computerPlay();
+    resultsDiv.textContent = `You played ${playerSelection} against ${computerSelection}.`;
 
-  resultsDiv.textContent = "";
-  winnerDiv.textContent = "";
-
-  const playerChoice = document.createElement("p");
-  playerChoice.textContent = `Player chose: ${playerSelection}`;
-
-  const computerChoice = document.createElement("p");
-  computerChoice.textContent = `Computer chose: ${computerSelection}`;
-
-  const outcome = document.createElement("p");
-
-  if (playerSelection === computerSelection) {
-
-    outcome.textContent = "It's a tie!";
-
-  } else if (
-    (playerSelection === "rock" && computerSelection === "scissors") ||
-    (playerSelection === "paper" && computerSelection === "rock") ||
-    (playerSelection === "scissors" && computerSelection === "paper")
-  ) {
-
-    outcome.textContent = "You win this round!";
-    playerScore++;
-    winSound.play();
-
-  } else {
-
-    outcome.textContent = "You lose this round!";
-    computerScore++;
-    loseSound.play();
-
-  }
-
-  // SAVE SCORE
-  localStorage.setItem("playerScore", playerScore);
-  localStorage.setItem("computerScore", computerScore);
-
-
-  // SHOW RESULTS
-  resultsDiv.appendChild(playerChoice);
-  resultsDiv.appendChild(computerChoice);
-  resultsDiv.appendChild(outcome);
-
-
-  // UPDATE SCORE
-  scoreDiv.textContent = `Player: ${playerScore} | Computer: ${computerScore}`;
-
-
-  // CHECK GAME WINNER
-  if (playerScore == 5 || computerScore == 5) {
-
-    const winnerMessage = document.createElement("h2");
-
-    if (playerScore == 5) {
-
-      winnerMessage.textContent = "🎉 You won the game!";
-      winnerDiv.classList.add("win-animation");
-
+    // Process game logic conditions
+    if (playerSelection === computerSelection) {
+        winnerDiv.textContent = "It's an even standoff. Tie!";
+        winnerDiv.className = "text-tie";
+    } else if (
+        (playerSelection === "rock" && computerSelection === "scissors") ||
+        (playerSelection === "paper" && computerSelection === "rock") ||
+        (playerSelection === "scissors" && computerSelection === "paper")
+    ) {
+        winnerDiv.textContent = "Round secured! You win.";
+        winnerDiv.className = "text-win";
+        playerScore++;
+        winStreak++;
+        safelyPlaySound(winSound);
     } else {
-
-      winnerMessage.textContent = "💻 Computer won the game!";
-
+        winnerDiv.textContent = "The computer outsmarted you. You lose.";
+        winnerDiv.className = "text-lose";
+        computerScore++;
+        winStreak = 0; // Break active winning streak
+        safelyPlaySound(loseSound);
     }
 
-    winnerDiv.appendChild(winnerMessage);
+    // Persist session progress metrics state updates
+    localStorage.setItem("playerScore", playerScore);
+    localStorage.setItem("computerScore", computerScore);
+    localStorage.setItem("winStreak", winStreak);
 
-    disableButtons();
-  }
+    playerSelectionTarget.textContent = playerScore;
+    computerSelectionTarget.textContent = computerScore;
+    streakTarget.textContent = `Streak: ${winStreak} 🔥`;
 
+    checkMatchEnd();
 }
 
-
-// DISABLE BUTTONS
-function disableButtons() {
-
-  document.getElementById("rock").disabled = true;
-  document.getElementById("paper").disabled = true;
-  document.getElementById("scissors").disabled = true;
-
+function checkMatchEnd() {
+    if (playerScore === 5 || computerScore === 5) {
+        if (playerScore === 5) {
+            winnerDiv.textContent = "🏆 Victory! You dominated the match!";
+            winnerDiv.className = "text-win pop-animation";
+        } else {
+            winnerDiv.textContent = "💻 Defeat! The computer conquered the match.";
+            winnerDiv.className = "text-lose pop-animation";
+        }
+        
+        toggleButtons(true);
+    }
 }
 
+function toggleButtons(disabledState) {
+    ["rock", "paper", "scissors"].forEach(id => {
+        document.getElementById(id).disabled = disabledState;
+    });
+}
 
-// RESET GAME
+// Reset implementation clear patterns
 document.getElementById("reset").addEventListener("click", () => {
+    playerScore = 0;
+    computerScore = 0;
+    winStreak = 0;
 
-  playerScore = 0;
-  computerScore = 0;
+    localStorage.clear();
 
-  localStorage.setItem("playerScore", 0);
-  localStorage.setItem("computerScore", 0);
+    initializeUI();
+    
+    playerSlot.textContent = "?";
+    computerSlot.textContent = "?";
+    resultsDiv.textContent = "Make your move to begin the match";
+    winnerDiv.textContent = "";
+    winnerDiv.className = "";
 
-  scoreDiv.textContent = "Player: 0 | Computer: 0";
-
-  resultsDiv.textContent = "";
-  winnerDiv.textContent = "";
-
-  document.getElementById("rock").disabled = false;
-  document.getElementById("paper").disabled = false;
-  document.getElementById("scissors").disabled = false;
-
+    toggleButtons(false);
 });
 
-
-// BUTTON EVENTS
-document.getElementById("rock").addEventListener("click", () => playRound("rock"));
-document.getElementById("paper").addEventListener("click", () => playRound("paper"));
-document.getElementById("scissors").addEventListener("click", () => playRound("scissors"));
+// Setup event delegation handling
+document.querySelectorAll(".card-btn").forEach(button => {
+    button.addEventListener("click", (e) => {
+        const targetChoice = e.currentTarget.getAttribute("data-choice");
+        playRound(targetChoice);
+    });
+});
